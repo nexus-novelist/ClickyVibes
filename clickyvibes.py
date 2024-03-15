@@ -9,33 +9,52 @@ import pygame
 if __name__ == '__main__':
     pygame.mixer.init()
     key_folder_path = sys.argv[1]
-    key_volume = int(sys.argv[2]) or 50
+    key_volume = int(sys.argv[2])
     mouse_folder_path = sys.argv[3]
-    mouse_volume = int(sys.argv[4]) or 50
-    loaded_sounds = {}
+    mouse_volume = int(sys.argv[4])
+    loaded_key_sounds = {}
+    loaded_mouse_sounds = {}
+
+    with open('logo.txt', 'r') as logo:
+        print(logo.read())
 
     for file in os.listdir(key_folder_path):
         if (file.endswith('.mp4') or file.endswith('.wav')) and not file.lower().startswith('full'):
-            loaded_sounds.update({file: key_folder_path+'\\'+file})
+            loaded_key_sounds.update({file: key_folder_path+'\\'+file})
     
-    print(loaded_sounds)
+    for file in os.listdir(mouse_folder_path):
+        if (file.endswith('.mp4') or file.endswith('.wav')) and not file.lower().startswith('full'):
+            loaded_mouse_sounds.update({file: mouse_folder_path+'\\'+file})
 
     def on_click(x, y, button, pressed):
         if pressed:
-            print(button)
+            if button == mouse.Button.left:
+                button = 'left'
+            elif button == mouse.Button.right:
+                button = 'right'
+            else:
+                button = 'middle'
+            if button+'.wav' in loaded_mouse_sounds:
+                sound = pygame.mixer.Sound(loaded_mouse_sounds[button+'.wav'])
+                sound.play()
+                sound.set_volume(mouse_volume/100)
+            else:
+                sound = pygame.mixer.Sound(random.choice(list(loaded_mouse_sounds.items()))[1])
+                sound.play()
+                sound.set_volume(mouse_volume/100)
 
     def on_type(key):
         if getattr(key, 'char', 'none') != 'none':
-            if key.char in loaded_sounds:
-                sound = pygame.mixer.Sound(loaded_sounds[key.char])
+            if key.char.lower()+'.wav' in loaded_key_sounds:
+                sound = pygame.mixer.Sound(loaded_key_sounds[key.char.lower()+'.wav'])
                 sound.play()
                 sound.set_volume(key_volume/100)
             else:
-                sound = pygame.mixer.Sound(random.choice(list(loaded_sounds.items()))[1])
+                sound = pygame.mixer.Sound(random.choice(list(loaded_key_sounds.items()))[1])
                 sound.play()
                 sound.set_volume(key_volume/100)
         else:
-            sound = pygame.mixer.Sound(random.choice(list(loaded_sounds.items()))[1])
+            sound = pygame.mixer.Sound(random.choice(list(loaded_key_sounds.items()))[1])
             sound.play()
             sound.set_volume(key_volume/100)
     
