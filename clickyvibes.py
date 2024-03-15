@@ -15,7 +15,9 @@ if __name__ == '__main__':
     loaded_key_sounds = {}
     loaded_mouse_sounds = {}
 
-    with open('logo.txt', 'r') as logo:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    with open(os.path.join(script_dir, 'logo.txt'), 'r') as logo:
         print(logo.read())
 
     for file in os.listdir(key_folder_path):
